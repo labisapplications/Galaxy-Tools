@@ -9,6 +9,12 @@
 # Description
 ###
 
+### Installers ###
+# install.packages("qvalue")
+# install.packages("ggplot2")
+# install.packages("mclust")
+# install.packages("reshape2")
+
 rm(list=ls())
 
 #Load required packages
@@ -16,6 +22,7 @@ library(qvalue)
 library(ggplot2)
 library(mclust)
 library(reshape2)
+
 ###
 
 # Set Functions
@@ -32,7 +39,7 @@ readCsvDirectory<-function(directoryName, filename) {
                        na.strings = 'NaN',
                        dec='.',
                        stringsAsFactors=FALSE)
-  return(fileData[-1:-2,])
+  return(fileData)
 }
 
 # Print the dim, columns name and the first 5 rows of a variable
@@ -116,27 +123,35 @@ VarifyAComplteGroup <- function(proteins, number_exp, num_div) {
       switch_var <- length(pos_NaN)
       allPos <- c(pos_valid, pos_NaN)
       ## Execute conditions
-      if (switch_var == 0) {
-        resultValue <- getTheMedian(proteins, protein, allPos)
-        caso1 <- caso1 + 1
-      }
-      if (switch_var == 1) {
-        proteins[protein, pos_NaN] <- mean(as.numeric(proteins[protein, pos_valid]))
-        resultValue <- getTheMedian(proteins, protein, allPos)
-        caso2 <- caso2 + 1
-      }
-      if (switch_var == 2) {
+      
+      if(length(pos_valid) == 0){
         proteins[protein, pos_NaN] <- 0
-        ## resultValue <- 0
-        resultValue <- proteins[protein, pos_valid]
-        caso3 <- caso3 + 1
-        count_p <- count_p + 1 
+      }else{
+        proteins[protein, pos_NaN] <- median(as.numeric(proteins[protein, pos_valid]))
       }
-      if (switch_var == 3) {
-        proteins[protein, pos_NaN] <- 0
-        resultValue <- 0
-        caso4 <- caso4 + 1
-      }
+      
+      resultValue <- getTheMedian(proteins, protein, allPos)
+      ##if (switch_var == 0) {
+      ##resultValue <- getTheMedian(proteins, protein, allPos)
+      ##caso1 <- caso1 + 1
+      ##}
+      ##if (switch_var == 1) {
+      ##proteins[protein, pos_NaN] <- mean(as.numeric(proteins[protein, pos_valid]))
+      ##resultValue <- getTheMedian(proteins, protein, allPos)
+      ##caso2 <- caso2 + 1
+      ##}
+      ##if (switch_var == 2) {
+      ##proteins[protein, pos_NaN] <- 0
+      #### resultValue <- 0
+      ##resultValue <- proteins[protein,   ]
+      ##caso3 <- caso3 + 1
+      ##count_p <- count_p + 1 
+      ##}
+      ##if (switch_var == 3) {
+      ##proteins[protein, pos_NaN] <- 0
+      ##resultValue <- 0
+      ##caso4 <- caso4 + 1
+      ##}
       ## Get the unique value
       proteins[protein, column_name] <- resultValue 
     }
@@ -149,11 +164,6 @@ VarifyAComplteGroup <- function(proteins, number_exp, num_div) {
     }
   }
   ## return the list
-  print(caso1)
-  print(caso2)
-  print(caso3)
-  print(caso4)
-  print(count)
   if(length(protein_erase) > 0) {
     return(proteins[-protein_erase,])
   }else{
@@ -173,7 +183,7 @@ getNameColumn <- function(col_names, pos) {
 ## col_names String The Id of the protein
 ## Rodrigo Dorado
 getNameOfEspColumn <- function(col_names) {
-  return(strsplit(strsplit(col_names, "[.]")[[1]][3], "[_]")[[1]][1])
+  return(strsplit(strsplit(col_names, "[.]")[[1]][3], "[_]")[[1]][2])
 }
 
 ## Get the median of a group
@@ -377,13 +387,17 @@ savePlotPDF <- function(name, data) {
   dev.off()
 }
 
-directory <- "C:/Users/Rodrigo Dorado/Desktop/Git/Galaxy-Tools"
-filename <- "log2_categorizada_1344prot.txt"
-project_name <- "last_prpject_june_6"
-id_column <- 37
+directory <- "" ##Directory of the file
+filename <- "" ##File name
+project_name <- "" ##Project name
+id_column <- 31
 first_experiment <- 0
 Num_Experiments <- 10
 Num_Divisions <- 3
+
+
+controlFileName<-""
+
 
 Column_division <- Num_Experiments * Num_Divisions
 All_proteins <- readCsvDirectory(directory, filename)
