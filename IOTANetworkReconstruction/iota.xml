@@ -1,0 +1,28 @@
+<tool id="iota" name="IOTA Network Reconstruction" version="0.1.0">
+    <description>
+        is a tool to infer regulatory networks from experimental time series
+        data.
+    </description>
+    <requirements>
+    </requirements>
+    <command detect_errors="exit_code"><![CDATA[
+        Rscript ./main.R '$input-file' '$output-file'
+    ]]></command>
+    <inputs>
+        <param type="data" name="input-file" format="csv" />
+    </inputs>
+    <outputs>
+        <data name="output-file" format="tsv" />
+    </outputs>
+    <tests>
+        <test>
+            <param  name="input-file" value="yeast_test.csv" />
+            <output name="output-file" value="yeast_output.tsv" />
+        </test>
+    </tests>
+    <help><![CDATA[
+        Usage: Rscript main.R input_data output_file
+    ]]></help>
+    <citations>
+    </citations>
+</tool>
